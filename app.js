@@ -202,10 +202,11 @@ function callSendAPI(messageData) {
   });
 }
 
-const specificTime = '0 6 * * *';
-const every5Mins = '*/5 11 * * *';
+const everyMorningSixOClock = '0 6 * * *';
+//Sample Pattern for running every 5 mins
+const every5Mins = '*/5 * * * *';
 
-const cronJob = new CronJob(specificTime, () => {
+new CronJob(everyMorningSixOClock, () => {
   const gauriMessengerId = 1515477448466982;
   sendTextMessage(gauriMessengerId,"Any message");
   console.log('Message Sent from Cron Job');
