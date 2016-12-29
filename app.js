@@ -4,7 +4,9 @@ const
   crypto = require('crypto'),
   express = require('express'),
   https = require('https'),
-  request = require('request');
+  request = require('request'),
+  schedule = require('node-schedule'),
+  CronJob = require('cron').CronJob;
 
 
 var app = express();
@@ -33,9 +35,18 @@ const SERVER_URL = (process.env.SERVER_URL) ?
   (process.env.SERVER_URL) :
   config.get('serverURL');
 
+const TIME_URL = (process.env.TIME_URL) ?
+  (process.env.TIME_URL):
+  config.get('timeURL');
 
+app.get('/health', (req,res)=>{
+  console.log("Health Check URL");
+  res.send("OK");
+});
 
 app.get('/webhook', function(req, res) {
+  console.log("The Validation Token during run time is "+VALIDATION_TOKEN);
+  console.log("req.query['hub.verify_token'] ..."+req.query['hub.verify_token']);
   if (req.query['hub.mode'] === 'subscribe' &&
     req.query['hub.verify_token'] === VALIDATION_TOKEN) {
     console.log("Validating webhook");
@@ -142,20 +153,35 @@ function sendGenericMessage(recipientId, messageText) {
 }
 
 function sendTextMessage(recipientId, messageText) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      text: messageText
-    }
-  };
+  request({
+    uri: TIME_URL,
+    method: 'GET',
+    json:true
+  },
+    function (error,response, body){
+      if (!error && response.statusCode == 200) {
+        var messageData = {
+          recipient: {
+            id: recipientId
+          },
+          message: {
+            text: " Rahukalam : " +body.ra+ " Yamagandam : "+body.ya
+          }
+        };
 
-  callSendAPI(messageData);
+        console.log(messageData)
+        callSendAPI(messageData);
+      }
+  });
+
+
 }
+
+
 
 function callSendAPI(messageData) {
   request({
+    //uri: 'https://graph.facebook.com/v2.6/1710101049249680',
     uri: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: PAGE_ACCESS_TOKEN },
     method: 'POST',
@@ -175,5 +201,14 @@ function callSendAPI(messageData) {
     }
   });
 }
+
+const specificTime = '0 6 * * *';
+const every5Mins = '*/5 11 * * *';
+
+const cronJob = new CronJob(specificTime, () => {
+  const gauriMessengerId = 1515477448466982;
+  sendTextMessage(gauriMessengerId,"Any message");
+  console.log('Message Sent from Cron Job');
+}, null, true, 'America/Los_Angeles');
 
 module.exports = app;
