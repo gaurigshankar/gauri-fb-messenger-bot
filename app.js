@@ -202,7 +202,7 @@ function callSendAPI(messageData) {
   });
 }
 
-const everyMorningSixOClock = '0 6 * * *';
+const everyMorningSixOClock = '10 6 * * *';
 //Sample Pattern for running every 5 mins
 const every5Mins = '*/5 * * * *';
 
