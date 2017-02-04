@@ -158,7 +158,7 @@ function sendGenericMessage(recipientId, messageText) {
 
 function sendTextMessage(recipientId, messageText) {
   var uri = TIME_URL;
-  if (messageText == "ash") {
+  if (messageText == "ash" || messageText == "Ash") {
     uri = ASH_URL;
   }
   request({
@@ -173,10 +173,11 @@ function sendTextMessage(recipientId, messageText) {
             id: recipientId
           }
         };
-        if (messageText == "ash") {
-          messageData.message.text = body
+        if (messageText == "ash" || messageText == "Ash") {
+          messageData.message = {text:  "Ashtamis :: "+body}
         }else {
-          messageData.message.text = " Rahukalam : " +body.ra+ " Yamagandam : "+body.ya
+          messageData.message = {text:  " Rahukalam : " +body.ra+
+          " Yamagandam : "+body.ya}
         }
         console.log(messageData)
         callSendAPI(messageData);
