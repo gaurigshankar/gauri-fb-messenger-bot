@@ -3,5 +3,6 @@
   "pageAccessToken": "",
   "validationToken": "",
   "serverURL": "",
-  "timeURL": "https://gauri-check-time.herokuapp.com/times"
+  "timeURL": "https://gauri-check-time.herokuapp.com/times",
+  "ashURL": "https://gauri-check-time.herokuapp.com/ashtamis"
 }

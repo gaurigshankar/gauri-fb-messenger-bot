@@ -39,6 +39,10 @@ const TIME_URL = (process.env.TIME_URL) ?
   (process.env.TIME_URL):
   config.get('timeURL');
 
+const ASH_URL = (process.env.ASH_URL) ?
+  (process.env.ASH_URL):
+  config.get('ashURL');
+
 app.get('/health', (req,res)=>{
   console.log("Health Check URL");
   res.send("OK");
@@ -153,8 +157,12 @@ function sendGenericMessage(recipientId, messageText) {
 }
 
 function sendTextMessage(recipientId, messageText) {
+  var uri = TIME_URL;
+  if (messageText == "ash") {
+    uri = ASH_URL;
+  }
   request({
-    uri: TIME_URL,
+    uri: uri,
     method: 'GET',
     json:true
   },
@@ -163,12 +171,13 @@ function sendTextMessage(recipientId, messageText) {
         var messageData = {
           recipient: {
             id: recipientId
-          },
-          message: {
-            text: " Rahukalam : " +body.ra+ " Yamagandam : "+body.ya
           }
         };
-
+        if (messageText == "ash") {
+          messageData.message.text = body
+        }else {
+          messageData.message.text = " Rahukalam : " +body.ra+ " Yamagandam : "+body.ya
+        }
         console.log(messageData)
         callSendAPI(messageData);
       }
